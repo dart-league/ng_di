@@ -1,6 +1,6 @@
 name: ng_di
 description: Dependency injection package taken from angular DI.
-version: 0.0.1+1
+version: 0.0.1+2
 homepage: https://github.com/dart-league/ng_di
 author: Luis vargas <luisvargastijerino@gmail.com>
 
