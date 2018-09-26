@@ -1,11 +1,10 @@
 library example.type;
 
-import 'package:built_mirrors/built_mirrors.dart';
 import 'package:ng_di/ng_di.dart';
 
-part 'type.g.dart';
+part 'type.ng_di.g.dart';
 
-@injectable
+@Injectable()
 class Engine {
   String name;
 
@@ -19,11 +18,16 @@ class Car {
   Car(this.engine);
 }
 
+// tag::injector[]
+@GenerateInjector([Engine, Car])
+final injector = injector$Injector();
+// end::injector[]
+
 main() {
-  _initMirrors();
-
-  var injector = createInjector([Engine, Car]);
-
   assert(injector.get(Car).engine.name == null);
-  print('Carg.engine: ${injector.get(Car).engine.name}');
+
+  injector.get(Car).engine.name = 'my-engine';
+  assert(injector.get(Car).engine.name == 'my-engine');
+
+  print('Carg.engine.name: ${injector.get(Car).engine.name}');
 }

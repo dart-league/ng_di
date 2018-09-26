@@ -1,2 +1,3 @@
-export 'src/core/di.dart';
-export 'src/di/reflector.dart' show resetCache;
+export 'package:angular/di.dart';
+export 'package:angular/src/di/injector/hierarchical.dart';
+export 'package:angular/src/di/injector/injector.dart';

@@ -1,32 +1,37 @@
 library example.optional;
 
-import 'package:built_mirrors/built_mirrors.dart';
 import 'package:ng_di/ng_di.dart';
 
-part 'optional.g.dart';
+part 'optional.ng_di.g.dart';
 
-@injectable
+@Injectable()
 class Engine {
-  String name;
-
-  Engine(@Optional() this.name);
 }
 
 @Injectable()
 class Car {
   final Engine engine;
 
-  Car(this.engine);
+  Car(@Optional() this.engine);
 }
 
+class Truck {
+  final Engine engine;
+
+  Truck([this.engine]);
+}
+
+class Boat {
+  final Engine engine;
+
+  Boat({this.engine});
+}
+
+@GenerateInjector([Car, Truck, Boat])
+final injector = injector$Injector();
+
 main() {
-  _initMirrors();
-
-  var injector = createInjector([
-    Engine,
-    Car
-  ]);
-
-  assert(injector.get(Car).engine.name == null);
-  print('Carg.engine: ${injector.get(Car).engine.name}');
+  print('Carg.engine: ${injector.get(Car).engine}');
+  print('Truck.engine: ${injector.get(Truck).engine}');
+  print('Boat.engine: ${injector.get(Boat).engine}');
 }
