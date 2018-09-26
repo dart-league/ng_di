@@ -1,238 +1,236 @@
-# ng_di
-
-[![Build Status](https://travis-ci.org/dart-league/ng_di.svg?branch=master)](https://travis-ci.org/dart-league/ng_di)
+![Build
+Status](https://travis-ci.org/dart-league/ng_di.svg?branch=master)
 
 A Dependency Injection package taken from angular DI.
 
-# Usage
+Usage
+=====
 
-1. create a file `tool/build.dart` and add next code:
+Create one of the examples shown below
 
-```dart
-import 'package:build_runner/build_runner.dart';
-import 'package:built_mirrors/phase.dart';
+Inject by Type
+==============
 
+Create an Injector by using annotation `@GenerateInjector` and pass the
+List of types, then the generator will create the respective injector.
 
-main() async {
-  // In next line replace `example/**.dart` for the globs you want to use as input, for example `**/*.dart`
-  // or leave it empty to take all the dart files of the project as input.
-  await build([builtMirrorsAction(const ['example/**.dart'])], deleteFilesByDefault: true);
-}
+    @GenerateInjector([Engine, Car])
+    final injector = injector$Injector();
 
-```
+Full code:
 
-2. create one of the examples shown below
+    library example.type;
 
-3. run `tool/build.dart`
+    import 'package:ng_di/ng_di.dart';
 
-## Inject by Type
+    part 'type.ng_di.g.dart';
 
-In this case you need to annotate classes with `@Injectable()` or `@injectable`. This annotation tells to library
- `built-mirrors` to generate respective mirrors. For example:
+    @Injectable()
+    class Engine {
+      String name;
 
-```dart
-library example.type;
+      Engine();
+    }
 
-import 'package:built_mirrors/built_mirrors.dart';
-import 'package:ng_di/ng_di.dart';
+    @Injectable()
+    class Car {
+      final Engine engine;
 
-part 'type.g.dart';
+      Car(this.engine);
+    }
 
-@injectable
-class Engine {
-  String name;
+    //tag::injector[]
+    @GenerateInjector([Engine, Car])
+    final injector = injector$Injector();
+    //end::injector[]
 
-  Engine();
-}
+    main() {
+      assert(injector.get(Car).engine.name == null);
 
-@Injectable()
-class Car {
-  final Engine engine;
+      injector.get(Car).engine.name = 'my-engine';
+      assert(injector.get(Car).engine.name == 'my-engine');
 
-  Car(this.engine);
-}
+      print('Carg.engine.name: ${injector.get(Car).engine.name}');
+    }
 
-main() {
-  _initMirrors();
+Inject using `@Inject()` annotation
+===================================
 
-  var injector = createInjector([Engine, Car]);
+In this case you can specify the token corresponding to the dependency
+that will be injected. For example:
 
-  assert(injector.get(Car).engine.name == null);
-  print('Carg.engine: ${injector.get(Car).engine.name}');
-}
-```
+    library example.inject;
 
-## Inject using `@Inject()` annotation
+    import 'package:ng_di/ng_di.dart';
 
-In this case you can specify the token corresponding to the dependency that will be injected. For example:
+    part 'inject.ng_di.g.dart';
 
-```dart
-library example.inject;
+    const v4_engine_token = OpaqueToken<String>('v4_engine_token');
+    const v8_engine_token = OpaqueToken<String>('v8_engine_token');
+    const truck_token = OpaqueToken<String>('truck_token');
 
-import 'package:built_mirrors/built_mirrors.dart';
-import 'package:ng_di/ng_di.dart';
+    class Engine {
+      String name;
 
-part 'inject.g.dart';
+      Engine([@Inject(v4_engine_token) this.name]);
+    }
 
-class Engine {
-  String name;
+    class Car {
+      final Engine engine;
 
-  Engine([this.name]);
-}
+      Car(this.engine);
+    }
 
-@Injectable()
-class Car {
-  final Engine engine;
+    _truckFactory(String name) => Car(Engine(name));
 
-  Car(@Inject("MyEngine") this.engine);
-}
+    @GenerateInjector([
+      Provider(v4_engine_token, useValue: 'v4-engine'),
+      Provider(v8_engine_token, useValue: 'v8-engine'),
+      Engine,
+      Car,
+      Provider(truck_token, useFactory: _truckFactory, deps: [v8_engine_token])
+    ])
+    final injector = injector$Injector();
 
-main() {
-  _initMirrors();
+    main() {
+      print('Car.engine: ${injector.get(Car).engine.name}');
+      assert(injector.get(Car).engine.name == 'v4-engine');
+      print('truck.engine: ${injector.get(truck_token).engine.name}');
+      assert(injector.get(truck_token).engine.name == 'v8-engine');
+    }
 
-  var engine = new Engine('my-engine');
+Inject using `@Optional()` annotation
+=====================================
 
-  var injector = createInjector([
-    new Provider("MyEngine", useValue: engine),
-    Car
-  ]);
+In this case we can mark dependencies as optional, so if the value is
+not injected then a null value is passed. For example:
 
-  assert(injector.get(Car).engine.name == engine.name);
-  print('Carg.engine: ${injector.get(Car).engine.name}');
-}
-```
+    library example.optional;
 
-## Inject using `@Optional()` or `@optional` annotation
+    import 'package:ng_di/ng_di.dart';
 
-In this case we can mark dependencies as optional, so if the value is not injected then a null value is passed. For
- example:
+    part 'optional.ng_di.g.dart';
 
-```dart
-library example.optional;
+    @Injectable()
+    class Engine {
+    }
 
-import 'package:built_mirrors/built_mirrors.dart';
-import 'package:ng_di/ng_di.dart';
+    @Injectable()
+    class Car {
+      final Engine engine;
 
-part 'optional.g.dart';
+      Car(@Optional() this.engine);
+    }
 
-@injectable
-class Engine {
-  String name;
+    class Truck {
+      final Engine engine;
 
-  Engine(@Optional() this.name);
-}
+      Truck([this.engine]);
+    }
 
-@Injectable()
-class Car {
-  final Engine engine;
+    class Boat {
+      final Engine engine;
 
-  Car(this.engine);
-}
+      Boat({this.engine});
+    }
 
-main() {
-  _initMirrors();
+    @GenerateInjector([Car, Truck, Boat])
+    final injector = injector$Injector();
 
-  var injector = createInjector([
-    Engine,
-    Car
-  ]);
+    main() {
+      print('Carg.engine: ${injector.get(Car).engine}');
+      print('Truck.engine: ${injector.get(Truck).engine}');
+      print('Boat.engine: ${injector.get(Boat).engine}');
+    }
 
-  assert(injector.get(Car).engine.name == null);
-  print('Carg.engine: ${injector.get(Car).engine.name}');
-}
-```
+Inject using `@Self()` annotation
+=================================
 
-## Inject using `@Self()` or `@self` annotation
+In this case we can mark dependencies as self, so the injector should
+retrieve a dependency only from itself. For example:
 
-In this case we can mark dependencies as self, so the injector should retrieve a dependency only from itself. For
- example:
+    library example.self;
 
-```dart
-library example.self;
+    import 'package:ng_di/ng_di.dart';
 
-import 'package:built_mirrors/built_mirrors.dart';
-import 'package:ng_di/ng_di.dart';
+    part 'self.ng_di.g.dart';
 
-part 'self.g.dart';
+    @Injectable()
+    class Engine {
+      String name;
 
-@injectable
-class Engine {
-  String name;
+      Engine();
+    }
 
-  Engine();
-}
+    @Injectable()
+    class Car {
+      final Engine engine;
 
-@Injectable()
-class Car {
-  final Engine engine;
+      Car(@Self() this.engine);
+    }
 
-  Car(@Self() this.engine);
-}
+    @GenerateInjector([Engine, Car])
+    final injector = injector$Injector();
 
-main() {
-  _initMirrors();
+    @GenerateInjector([Engine])
+    final parentInjector = parentInjector$Injector();
 
-  var injector = createInjector([Engine, Car]);
+    @GenerateInjector([Car])
+    final childInjector = childInjector$Injector(parentInjector);
 
-  assert(injector.get(Car).engine.name == null);
-  print('Car.engine: ${injector.get(Car).engine.name}');
+    main() {
+      assert(injector.get(Car).engine.name == null);
+      print('Car.engine: ${injector.get(Car).engine.name}');
 
-  resetCache();
-  injector = createInjector([Engine]);
-  var child = createInjector([Car], injector);
+      try {
+        print('Car.engine: ${childInjector.get(Car).engine.name == null}');
+      } catch (e) {
+        print('error: $e');
+      }
+    }
 
-  try {
-    print('Car.engine: ${child.get(Car).engine.name == null}');
-  } catch (e) {
-    print('error: $e');
-  }
-}
-```
+Inject using `@SkipSelf()` annotation
+=====================================
 
-## Inject using `@SkipSelf()` or `@skipSelf` annotation
+In this case we can mark dependencies as optional, so the dependency
+resolution should start from the parent injector. For example:
 
-In this case we can mark dependencies as optional, so the dependency resolution should start from the parent injector.
- For example:
+    library example.skip_self;
 
-```dart
-library example.skip_self;
+    import 'package:ng_di/ng_di.dart';
 
-import 'package:built_mirrors/built_mirrors.dart';
-import 'package:ng_di/ng_di.dart';
+    part 'skip_self.ng_di.g.dart';
 
-part 'skip_self.g.dart';
+    @Injectable()
+    class Engine {
+      String name;
 
-@injectable
-class Engine {
-  String name;
+      Engine();
+    }
 
-  Engine();
-}
+    @Injectable()
+    class Car {
+      final Engine engine;
 
-@Injectable()
-class Car {
-  final Engine engine;
+      Car(@SkipSelf() this.engine);
+    }
 
-  Car(@SkipSelf() this.engine);
-}
+    @GenerateInjector([Engine, Car])
+    final injector = injector$Injector();
 
-main() {
-  _initMirrors();
+    @GenerateInjector([Engine])
+    final parentInjector = parentInjector$Injector();
 
-  var injector = createInjector([Engine, Car]);
+    @GenerateInjector([Car])
+    final childInjector = childInjector$Injector(parentInjector);
 
-  try {
-    print('Car.engine: ${injector.get(Car).engine.name == null}');
-  } catch (e) {
-    print('error: $e');
-  }
+    main() {
+      try {
+        print('Car.engine: ${injector.get(Car).engine.name == null}');
+      } catch (e) {
+        print('error: $e');
+      }
 
-  resetCache();
-
-  injector = createInjector([Engine]);
-  var child = createInjector([Car], injector);
-
-  assert(child.get(Car).engine.name == null);
-  print('Car.engine: ${child.get(Car).engine.name}');
-}
-```
+      assert(childInjector.get(Car).engine.name == null);
+      print('Car.engine: ${childInjector.get(Car).engine.name}');
+    }
