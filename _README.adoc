@@ -21,7 +21,7 @@ Full code:
 
 [source,dart]
 ----
-include::example/type.dart[tag:full]
+include::example/type.dart[tag=*]
 ----
 
 == Inject using `@Inject()` annotation
@@ -33,7 +33,7 @@ In this case you can specify the token corresponding to the dependency that will
 include::example/inject.dart[]
 ----
 
-== Inject using `@Optional()` annotation
+== Inject using `@Optional()` or `@optional` annotation
 
 In this case we can mark dependencies as optional, so if the value is not injected then a null value is passed. For example:
 
@@ -42,7 +42,7 @@ In this case we can mark dependencies as optional, so if the value is not inject
 include::example/optional.dart[]
 ----
 
-== Inject using `@Self()` annotation
+== Inject using `@Self()` or `@self` annotation
 
 In this case we can mark dependencies as self, so the injector should retrieve a dependency only from itself. For
  example:
@@ -52,7 +52,7 @@ In this case we can mark dependencies as self, so the injector should retrieve a
 include::example/self.dart[]
 ----
 
-== Inject using `@SkipSelf()` annotation
+== Inject using `@SkipSelf()` or `@skipSelf` annotation
 
 In this case we can mark dependencies as optional, so the dependency resolution should start from the parent injector. For example:
 

@@ -4,18 +4,18 @@ import 'package:ng_di/ng_di.dart';
 
 part 'skip_self.ng_di.g.dart';
 
-@Injectable()
+@injectable
 class Engine {
   String name;
 
   Engine();
 }
 
-@Injectable()
+@injectable
 class Car {
   final Engine engine;
 
-  Car(@SkipSelf() this.engine);
+  Car(@skipSelf this.engine);
 }
 
 @GenerateInjector([Engine, Car])

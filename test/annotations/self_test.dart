@@ -1,8 +1,9 @@
 library example.self;
 
 import 'package:ng_di/ng_di.dart';
+import 'package:test/test.dart';
 
-part 'self.ng_di.g.dart';
+part 'self_test.ng_di.g.dart';
 
 @Injectable()
 class Engine {
@@ -28,12 +29,8 @@ final parentInjector = parentInjector$Injector();
 final childInjector = childInjector$Injector(parentInjector);
 
 main() {
-  assert(injector.get(Car).engine.name == null);
-  print('Car.engine: ${injector.get(Car).engine.name}');
-
-  try {
-    print('Car.engine: ${childInjector.get(Car).engine.name == null}');
-  } catch (e) {
-    print('error: $e');
-  }
+  test('self', () {
+    expect(injector.get(Car).engine.name, null);
+    expect(() => childInjector.get(Car).engine.name, throwsA(TypeMatcher<NoProviderError>()));
+  });
 }

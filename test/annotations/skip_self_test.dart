@@ -1,21 +1,22 @@
-library example.self;
+library example.skip_self;
 
 import 'package:ng_di/ng_di.dart';
+import 'package:test/test.dart';
 
-part 'self.ng_di.g.dart';
+part 'skip_self_test.ng_di.g.dart';
 
-@Injectable()
+@injectable
 class Engine {
   String name;
 
   Engine();
 }
 
-@Injectable()
+@injectable
 class Car {
   final Engine engine;
 
-  Car(@self this.engine);
+  Car(@skipSelf this.engine);
 }
 
 @GenerateInjector([Engine, Car])
@@ -28,12 +29,8 @@ final parentInjector = parentInjector$Injector();
 final childInjector = childInjector$Injector(parentInjector);
 
 main() {
-  assert(injector.get(Car).engine.name == null);
-  print('Car.engine: ${injector.get(Car).engine.name}');
-
-  try {
-    print('Car.engine: ${childInjector.get(Car).engine.name == null}');
-  } catch (e) {
-    print('error: $e');
-  }
+  test('skipSelf', () {
+    expect(() => injector.get(Car).engine.name, throwsA(TypeMatcher<NoProviderError>()));
+    expect(childInjector.get(Car).engine.name, null);
+  });
 }

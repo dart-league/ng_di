@@ -1,8 +1,9 @@
 library example.optional;
 
 import 'package:ng_di/ng_di.dart';
+import 'package:test/test.dart';
 
-part 'optional.ng_di.g.dart';
+part 'optional_test.ng_di.g.dart';
 
 @injectable
 class Engine {
@@ -31,7 +32,9 @@ class Boat {
 final injector = injector$Injector();
 
 main() {
-  print('Carg.engine: ${injector.get(Car).engine}');
-  print('Truck.engine: ${injector.get(Truck).engine}');
-  print('Boat.engine: ${injector.get(Boat).engine}');
+  test('optional', () {
+    expect(injector.get(Car).engine, null);
+    expect(injector.get(Truck).engine, null);
+    expect(injector.get(Boat).engine, null);
+  });
 }
