@@ -3,7 +3,7 @@ library inject_test;
 import 'package:ng_di/ng_di.dart';
 import 'package:test/test.dart';
 
-part 'inject_test.ng_di.g.dart';
+part 'inject_test.g.dart';
 
 const v4_engine_token = OpaqueToken<String>('v4_engine_token');
 const v8_engine_token = OpaqueToken<String>('v8_engine_token');

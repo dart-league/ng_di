@@ -13,12 +13,11 @@ class _Injector$injector extends HierarchicalInjector {
   _Injector$injector._([Injector parent]) : super(parent);
 
   Car _field0;
-  Car _getCar$0() => _field0 ??= Car(injectOptionalUntyped(Engine, null));
+  Car _getCar$0() => _field0 ??= Car(get(Engine, null));
   Truck _field1;
-  Truck _getTruck$1() => _field1 ??= Truck(injectOptionalUntyped(Engine, null));
+  Truck _getTruck$1() => _field1 ??= Truck(get(Engine, null));
   Boat _field2;
-  Boat _getBoat$2() =>
-      _field2 ??= Boat(engine: injectOptionalUntyped(Engine, null));
+  Boat _getBoat$2() => _field2 ??= Boat(engine: get(Engine, null));
 
   @override
   Object injectFromSelfOptional(Object token,

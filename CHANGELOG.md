@@ -1,3 +1,8 @@
+## 2.0.0-alpha
+
+- upgrade angular to version `^6.0.0-alpha`
+- change `injector.inject` to `injector.get` in generator
+
 ## 1.1.0
 
 - add annotations `@optional`, `self` and `skipSelf`

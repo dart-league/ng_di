@@ -15,7 +15,7 @@ class _Injector$injector extends HierarchicalInjector {
   Engine _field0;
   Engine _getEngine$0() => _field0 ??= Engine();
   Car _field1;
-  Car _getCar$1() => _field1 ??= Car(inject(Engine));
+  Car _getCar$1() => _field1 ??= Car(get(Engine));
 
   @override
   Object injectFromSelfOptional(Object token,

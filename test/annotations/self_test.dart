@@ -3,7 +3,7 @@ library example.self;
 import 'package:ng_di/ng_di.dart';
 import 'package:test/test.dart';
 
-part 'self_test.ng_di.g.dart';
+part 'self_test.g.dart';
 
 @Injectable()
 class Engine {

@@ -3,7 +3,7 @@ library injector_test;
 import 'package:ng_di/ng_di.dart';
 import 'package:test/test.dart';
 
-part 'injector_test.ng_di.g.dart';
+part 'injector_test.g.dart';
 
 final throwsNoProviderError = throwsA(_isNoProviderError);
 final _isNoProviderError = TypeMatcher<NoProviderError>();

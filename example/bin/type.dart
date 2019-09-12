@@ -2,7 +2,7 @@ library example.type;
 
 import 'package:ng_di/ng_di.dart';
 
-part 'type.ng_di.g.dart';
+part 'type.g.dart';
 
 @injectable
 class Engine {

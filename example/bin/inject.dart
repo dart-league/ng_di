@@ -2,7 +2,7 @@ library example.inject;
 
 import 'package:ng_di/ng_di.dart';
 
-part 'inject.ng_di.g.dart';
+part 'inject.g.dart';
 
 const v4_engine_token = OpaqueToken<String>('v4_engine_token');
 const v8_engine_token = OpaqueToken<String>('v8_engine_token');

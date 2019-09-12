@@ -3,7 +3,7 @@ library example.skip_self;
 import 'package:ng_di/ng_di.dart';
 import 'package:test/test.dart';
 
-part 'skip_self_test.ng_di.g.dart';
+part 'skip_self_test.g.dart';
 
 @injectable
 class Engine {

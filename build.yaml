@@ -1,9 +1,13 @@
+targets:
+  $default:
+    builders:
+      ng_di:
+        generate_for: [example/**, test/**]
 builders:
-  built_mirrors_builder:
-    target: :_ng_di
+  ng_di:
     import: package:ng_di/builder.dart
     builder_factories: [builder]
-    build_to: source
-    auto_apply: root_package
+    auto_apply: dependents
     build_extensions:
-      .dart: [.g.dart]
+      .dart: [.ng_di.g.part]
+    applies_builders: [source_gen|combining_builder]

@@ -47,19 +47,19 @@ class NgDiGenerator extends GeneratorForAnnotation<GenerateInjector> {
 
       if (isNotMultiToken) {
         renderedTokens[renderedTokenValue] = {
-          'fields': 'var _field$i; _getdynamic\$$i() => _field$i ??= ${_renderValueOrFactory(providerCr)};',
-          'returns': '_getdynamic\$$i()'
+          'fields': 'var _field$i; _getDynamic\$$i() => _field$i ??= ${_renderValueOrFactory(providerCr)};',
+          'returns': '_getDynamic\$$i()'
         };
       } else {
         if (renderedTokens[renderedTokenValue] != null) {
           renderedTokens[renderedTokenValue]['fields']
-              .add('var _field$i; _getdynamic\$$i() => _field$i ??= ${_renderValueOrFactory(providerCr)};');
+              .add('var _field$i; _getDynamic\$$i() => _field$i ??= ${_renderValueOrFactory(providerCr)};');
           renderedTokens[renderedTokenValue]['returns']
-              .add('_getdynamic\$$i()');
+              .add('_getDynamic\$$i()');
         } else {
           renderedTokens[renderedTokenValue] = {
-            'fields': ['var _field$i; _getdynamic\$$i() => _field$i ??= ${_renderValueOrFactory(providerCr)};'],
-            'returns': ['_getdynamic\$$i()']
+            'fields': ['var _field$i; _getDynamic\$$i() => _field$i ??= ${_renderValueOrFactory(providerCr)};'],
+            'returns': ['_getDynamic\$$i()']
           };
         }
       }
@@ -91,23 +91,23 @@ class _Injector\$$injectorName extends HierarchicalInjector {
 }
 
 String _renderInject(ParameterElement p) {
-  if (p.metadata.any((a) => a.constantValue.type.element.name == 'Optional') || p.isOptional) {
-    return '${p.isNamed ? p.name + ': ' : ''}injectOptionalUntyped(${_renderToken(p)}, null)';
+  if (p.metadata.any((a) => a.computeConstantValue().type.element.name == 'Optional') || p.isOptional) {
+    return '${p.isNamed ? p.name + ': ' : ''}get(${_renderToken(p)}, null)';
   }
 
-  if (p.metadata.any((a) => a.constantValue.type.element.name == 'Self')) {
+  if (p.metadata.any((a) => a.computeConstantValue().type.element.name == 'Self')) {
     return 'injectFromSelf(${_renderToken(p)})';
   }
 
-  if (p.metadata.any((a) => a.constantValue.type.element.name == 'SkipSelf')) {
+  if (p.metadata.any((a) => a.computeConstantValue().type.element.name == 'SkipSelf')) {
     return 'injectFromAncestry(${_renderToken(p)})';
   }
 
-  return 'inject(${_renderToken(p)})';
+  return 'get(${_renderToken(p)})';
 }
 
 String _renderToken(ParameterElement p) {
-  var injectAnnotation = p.metadata.firstWhere((a) => a.constantValue.type.element.name == 'Inject',
+  var injectAnnotation = p.metadata.firstWhere((a) => a.computeConstantValue().type.element.name == 'Inject',
       orElse: () => null);
   if (injectAnnotation != null) {
     return _renderTokenValue(ConstantReader(injectAnnotation.computeConstantValue()));
@@ -175,7 +175,7 @@ String _renderValueOrFactory(ConstantReader cr) {
   var existingCr = cr.read('useExisting');
   if (existingCr != null && !existingCr.isNull) {
     ClassElement classElement = existingCr.typeValue.element;
-    return 'inject(${classElement.name})';
+    return 'get(${classElement.name})';
   }
 
   return '${cr.read('token').typeValue.name}()';
@@ -222,7 +222,7 @@ String _renderValue(DartObject value) {
 
 String _renderDeps(ConstantReader depsCr) {
   if (depsCr != null && depsCr.isList) {
-    return '${depsCr.listValue.map((v) => 'inject(${_renderValue(v)})').join(',')}';
+    return '${depsCr.listValue.map((v) => 'get(${_renderValue(v)})').join(',')}';
   }
 
   return '';

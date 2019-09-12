@@ -3,7 +3,7 @@ library injector_use_value_test;
 import 'package:ng_di/ng_di.dart';
 import 'package:test/test.dart';
 
-part 'injector_use_value_test.ng_di.g.dart';
+part 'injector_use_value_test.g.dart';
 
 // Tests specifically for @GenerateInjector + useValue: ...
 //
